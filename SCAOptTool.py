@@ -55,6 +55,7 @@ def predict_cell_type(input_genes):
     cell_types = input_data.idxmax(axis=1)
     
     # Returns a list of predicted cell types for each sample (cell)
+    print(cell_types)
     return list(cell_types)
 
 # Finds the highest scoring superceding node for a set of input genes
@@ -64,12 +65,12 @@ def find_superceding_node(input_genes):
     
     # Define a dictionary to store the superceding nodes for each input gene
     superceding_nodes = {}
-    superceding_node_weight = 0 
     
     # Loop over each input gene
     for gene in input_genes:
+        superceding_node_weight = 0 
         # Finds the connections for the current gene
-        connections = network[(network['Node 1'] == gene) | (network['Node 2'] == gene)]
+        connections = network[((network['Node 1'] == gene) | (network['Node 2'] == gene)) & (network['combined_score'] > 0.6)]
         
         # If connections exist
         if not connections.empty:
@@ -85,8 +86,8 @@ def find_superceding_node(input_genes):
             # Loop over the next superceding nodes until a superceding node with a higher weight is found
             while True:
                 # Finds the connections for the current superceding node
-                connections = network[(network['Node 1'] == superceding_node) | (network['Node 2'] == superceding_node)]
-                
+                connections = network[((network['Node 1'] == superceding_node) | (network['Node 2'] == superceding_node)) & (network['combined_score'] > 0.6)]
+                print(connections)
                 # If connections exist
                 if not connections.empty:
                     # Finds the highest scoring connection for the current superceding node
@@ -106,6 +107,7 @@ def find_superceding_node(input_genes):
                     else:
                         # Ends the loop if the next superceding node has a lower or equal weight
                         break
+                    print(superceding_node)
                 else:
                     # Ends the loop if no more connections are found for the current superceding node
                     break
